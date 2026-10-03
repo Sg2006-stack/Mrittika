@@ -17,10 +17,34 @@ export function InfrastructureSection() {
   const [activeRegion, setActiveRegion] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const liveRegions = [
-    { name: "Raspberry Pi 5", nodes: data.devices.raspberryPi, status: data.devices.raspberryPi },
-    { name: "ESP32", nodes: data.devices.esp32, status: data.devices.esp32 },
-    { name: "NPK sensor", nodes: data.devices.npkSensor, status: data.devices.npkSensor },
-    { name: "Irrigation pump", nodes: data.water.pumpStatus, status: data.water.irrigationStatus },
+    {
+      name: "Raspberry Pi 5",
+      detail: "Gateway",
+      value: data.devices.raspberryPi,
+      status: data.devices.raspberryPi,
+    },
+    {
+      name: "ESP32",
+      detail: "Environment",
+      value: data.environment.temperature === null || data.environment.humidity === null
+        ? "—"
+        : `${data.environment.temperature}°C · ${data.environment.humidity}%`,
+      status: data.devices.esp32,
+    },
+    {
+      name: "NPK sensor",
+      detail: "Soil nutrients",
+      value: data.soil.nitrogen === null || data.soil.phosphorus === null || data.soil.potassium === null
+        ? "—"
+        : `N ${data.soil.nitrogen} · P ${data.soil.phosphorus} · K ${data.soil.potassium}`,
+      status: data.devices.npkSensor,
+    },
+    {
+      name: "Irrigation pump",
+      detail: "Relay control",
+      value: data.water.pumpStatus,
+      status: data.water.irrigationStatus,
+    },
   ];
 
   useEffect(() => {
@@ -201,7 +225,8 @@ export function InfrastructureSection() {
                 </span>
               </div>
               <span className="font-medium block mb-1">{region.name}</span>
-              <span className="text-sm text-muted-foreground">{region.nodes} nodes</span>
+              <span className="text-xs font-mono text-muted-foreground block mb-2">{region.detail}</span>
+              <span className="text-sm text-foreground/80">{region.value}</span>
             </div>
           ))}
         </div>
