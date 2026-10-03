@@ -7,9 +7,9 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { name: "Soil monitoring", href: "#features" },
-  { name: "Analytics", href: "/field-analysis" },
-  { name: "Sensors", href: "/field-analysis" },
-  { name: "Alerts", href: "/field-analysis" },
+  { name: "Analytics", href: "/analytics" },
+  { name: "Sensors", href: "/sensors" },
+  { name: "Alerts", href: "/alerts" },
   { name: "Field analysis", href: "/field-analysis" },
 ];
 

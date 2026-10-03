@@ -9,13 +9,13 @@ const footerLinks = {
     { name: "Soil health", href: "#features" },
     { name: "Monitoring flow", href: "#how-it-works" },
     { name: "Field overview", href: "/field-analysis" },
-    { name: "Sensors", href: "/field-analysis" },
+    { name: "Sensors", href: "/sensors" },
   ],
   Devices: [
     { name: "Digital twin", href: "/field-analysis" },
     { name: "Device map", href: "/field-analysis" },
-    { name: "Sensor readings", href: "/field-analysis" },
-    { name: "System status", href: "/field-analysis" },
+    { name: "Sensor readings", href: "/sensors" },
+    { name: "System status", href: "/alerts" },
   ],
   Company: [
     { name: "About", href: "#" },
