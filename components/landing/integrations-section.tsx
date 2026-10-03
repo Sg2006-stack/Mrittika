@@ -72,7 +72,6 @@ const integrations = [
   { name: "Moisture probe", category: "Soil" },
   { name: "Temperature", category: "Environment" },
   { name: "Humidity", category: "Environment" },
-  { name: "Water tank", category: "Water" },
   { name: "Pump relay", category: "Irrigation" },
 ];
 

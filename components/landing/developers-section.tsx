@@ -17,7 +17,7 @@ const features = [
   },
   { 
     title: "Irrigation", 
-    description: "Pump OFF and water tank level available at a glance."
+    description: "Pump relay status from the ESP32 payload."
   },
 ];
 

@@ -1,22 +1,21 @@
 export type SoilData = {
   soil: {
-    health: number;
-    nitrogen: number;
-    phosphorus: number;
-    potassium: number;
-    moisture: number;
-    temperature: number;
-    ph: number;
+    health: number | null;
+    nitrogen: number | null;
+    phosphorus: number | null;
+    potassium: number | null;
+    moisture: number | null;
+    temperature: number | null;
+    ph: number | null;
   };
   environment: {
-    temperature: number;
-    humidity: number;
-    pressure: number;
-    rainfall: number;
-    airQuality: number;
+    temperature: number | null;
+    humidity: number | null;
+    pressure: number | null;
+    rainfall: number | null;
+    airQuality: number | null;
   };
   water: {
-    tankLevel: number;
     pumpStatus: string;
     irrigationStatus: string;
   };
@@ -38,34 +37,29 @@ export type SoilData = {
 
 export const soilData: SoilData = {
   soil: {
-    health: 84,
-    nitrogen: 42,
-    phosphorus: 28,
-    potassium: 35,
-    moisture: 42,
-    temperature: 24.6,
-    ph: 6.8,
+    health: null,
+    nitrogen: null,
+    phosphorus: null,
+    potassium: null,
+    moisture: null,
+    temperature: null,
+    ph: null,
   },
   environment: {
-    temperature: 27.4,
-    humidity: 68,
-    pressure: 1012,
-    rainfall: 4.2,
-    airQuality: 92,
+    temperature: null,
+    humidity: null,
+    pressure: null,
+    rainfall: null,
+    airQuality: null,
   },
   water: {
-    tankLevel: 72,
-    pumpStatus: "OFF",
-    irrigationStatus: "READY",
+    pumpStatus: "UNAVAILABLE",
+    irrigationStatus: "UNAVAILABLE",
   },
   devices: {
     raspberryPi: "ONLINE",
     esp32: "ONLINE",
     npkSensor: "CONNECTED",
   },
-  readings: [
-    { timestamp: "10:30", nitrogen: 42, phosphorus: 28, potassium: 35, moisture: 42, temperature: 24.6, status: "NORMAL" },
-    { timestamp: "10:15", nitrogen: 41, phosphorus: 28, potassium: 34, moisture: 44, temperature: 24.4, status: "NORMAL" },
-    { timestamp: "10:00", nitrogen: 40, phosphorus: 27, potassium: 34, moisture: 46, temperature: 24.1, status: "NORMAL" },
-  ],
+  readings: [],
 };

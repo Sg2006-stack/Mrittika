@@ -208,8 +208,8 @@ export function HeroSection() {
       >
         <div className="max-w-[1400px] mx-auto flex items-start gap-10 lg:gap-20">
           {[
-            { value: `${data.soil.health}%`, label: "soil health score" },
-            { value: `${data.soil.moisture}%`, label: "soil moisture" },
+            { value: data.soil.health === null ? "—" : `${data.soil.health}%`, label: "soil health score" },
+            { value: data.soil.moisture === null ? "—" : `${data.soil.moisture}%`, label: "soil moisture" },
             { value: data.devices.npkSensor, label: "NPK sensor status" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col gap-2">

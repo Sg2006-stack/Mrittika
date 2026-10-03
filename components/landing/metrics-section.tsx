@@ -6,21 +6,21 @@ import { useSoilData } from "@/hooks/use-soil-data";
 
 const metrics = [
   { 
-    value: soilData.soil.moisture, 
+    value: null, 
     suffix: "%", 
     prefix: "",
     label: "Soil moisture",
     sublabel: "live field reading",
   },
   { 
-    value: soilData.environment.humidity, 
+    value: null, 
     suffix: "%", 
     prefix: "",
     label: "Air humidity",
     sublabel: "current environment",
   },
   { 
-    value: soilData.soil.temperature,
+    value: null,
     suffix: "°C", 
     prefix: "",
     label: "Soil temperature",
@@ -28,7 +28,7 @@ const metrics = [
   },
 ];
 
-function AnimatedNumber({ end, suffix = "", prefix = "" }: { end: number; suffix?: string; prefix?: string }) {
+function AnimatedNumber({ end, suffix = "", prefix = "" }: { end: number | null; suffix?: string; prefix?: string }) {
   const [count, setCount] = useState(0);
   const [isScrambling, setIsScrambling] = useState(true);
   const ref = useRef<HTMLDivElement>(null);
@@ -45,7 +45,7 @@ function AnimatedNumber({ end, suffix = "", prefix = "" }: { end: number; suffix
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
             const eased = 1 - Math.pow(1 - progress, 4);
-            setCount(Math.floor(eased * end));
+            if (end !== null) setCount(Math.floor(eased * end));
             setIsScrambling(progress < 0.8);
             if (progress < 1) requestAnimationFrame(animate);
           };
@@ -64,7 +64,7 @@ function AnimatedNumber({ end, suffix = "", prefix = "" }: { end: number; suffix
     <div ref={ref} className="inline-flex items-baseline">
       <span className="text-muted-foreground mr-1">{prefix}</span>
       <span className="tabular-nums">
-        {displayValue.split("").map((char, i) => (
+        {end === null ? "—" : displayValue.split("").map((char, i) => (
           <span
             key={i}
             className={`inline-block transition-all duration-150 ${
@@ -336,10 +336,10 @@ export function MetricsSection() {
         <div className={`mt-16 pt-8 border-t border-foreground/10 flex flex-wrap items-center gap-x-12 gap-y-4 text-sm font-mono text-muted-foreground transition-all duration-1000 delay-500 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          <span>N 42 mg/kg</span>
-          <span>P 28 mg/kg</span>
-          <span>K 35 mg/kg</span>
-          <span>pH 6.8</span>
+          <span>N {data.soil.nitrogen === null ? "—" : `${data.soil.nitrogen} mg/kg`}</span>
+          <span>P {data.soil.phosphorus === null ? "—" : `${data.soil.phosphorus} mg/kg`}</span>
+          <span>K {data.soil.potassium === null ? "—" : `${data.soil.potassium} mg/kg`}</span>
+          <span>pH {data.soil.ph === null ? "—" : data.soil.ph}</span>
           <span className="text-foreground">NORMAL field status</span>
         </div>
       </div>

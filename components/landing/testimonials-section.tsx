@@ -11,28 +11,28 @@ const testimonials = [
     author: "Soil moisture",
     role: "Live reading",
     company: "Field sensor",
-    metric: { value: `${soilData.soil.moisture}%`, label: "Moisture" },
+    metric: { value: "—", label: "Moisture" },
   },
   {
     quote: "The nutrient profile is balanced enough to keep the current crop plan moving forward.",
     author: "NPK sensor",
     role: "Connected",
     company: "ESP32",
-    metric: { value: `${soilData.soil.nitrogen}`, label: "N mg/kg" },
+    metric: { value: "—", label: "N mg/kg" },
   },
   {
     quote: "Environmental context makes every soil reading more useful for the next irrigation decision.",
     author: "Field environment",
     role: "Live reading",
     company: "Raspberry Pi 5",
-    metric: { value: `${soilData.environment.humidity}%`, label: "Humidity" },
+    metric: { value: "—", label: "Humidity" },
   },
   {
     quote: "All core devices are reporting normally, with the pump off and water available in reserve.",
     author: "Irrigation system",
     role: "System status",
     company: "Water controls",
-    metric: { value: `${soilData.water.tankLevel}%`, label: "Tank level" },
+    metric: { value: "—", label: "Unavailable" },
   },
 ];
 
@@ -84,7 +84,7 @@ export function TestimonialsSection() {
       ? { ...testimonial, metric: { value: `${data.soil.nitrogen}`, label: "N mg/kg" } }
       : index === 2
         ? { ...testimonial, metric: { value: `${data.environment.humidity}%`, label: "Humidity" } }
-        : { ...testimonial, metric: { value: `${data.water.tankLevel}%`, label: "Tank level" } });
+        : { ...testimonial, metric: { value: data.environment.pressure === null ? "—" : `${data.environment.pressure}`, label: "Pressure hPa" } });
   const activeTestimonial = liveTestimonials[activeIndex];
   const asciiPattern = Array.from({ length: 60 }, (_, row) =>
     Array.from({ length: 100 }, (_, column) =>

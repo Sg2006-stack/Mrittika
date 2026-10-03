@@ -20,8 +20,8 @@ type SensorRow = {
   esp32: Record<string, unknown> | null;
 };
 
-function numeric(value: unknown, fallback: number) {
-  return typeof value === "number" && Number.isFinite(value) ? value : fallback;
+function numeric(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
 }
 
 function nestedData(value: Record<string, unknown> | null) {
@@ -33,12 +33,15 @@ function mapSensorRows(rows: SensorRow[]): SoilData {
   const latest = rows[0];
   const npk = nestedData(latest?.npk);
   const esp32 = nestedData(latest?.esp32);
-  const moisture = numeric(npk.moisture_pct, soilData.soil.moisture);
-  const nitrogen = numeric(npk.nitrogen_mg_kg, soilData.soil.nitrogen);
-  const phosphorus = numeric(npk.phosphorus_mg_kg, soilData.soil.phosphorus);
-  const potassium = numeric(npk.potassium_mg_kg, soilData.soil.potassium);
-  const temperature = numeric(npk.temperature_c, soilData.soil.temperature);
-  const health = Math.round(Math.min(100, Math.max(0, (moisture + nitrogen + phosphorus + potassium) / 4)));
+  const moisture = numeric(npk.moisture_pct);
+  const nitrogen = numeric(npk.nitrogen_mg_kg);
+  const phosphorus = numeric(npk.phosphorus_mg_kg);
+  const potassium = numeric(npk.potassium_mg_kg);
+  const temperature = numeric(npk.temperature_c);
+  const healthValues = [moisture, nitrogen, phosphorus, potassium].filter((value): value is number => value !== null);
+  const health = healthValues.length === 4
+    ? Math.round(Math.min(100, Math.max(0, healthValues.reduce((sum, value) => sum + value, 0) / 4)))
+    : null;
 
   return {
     ...soilData,
@@ -50,20 +53,20 @@ function mapSensorRows(rows: SensorRow[]): SoilData {
       potassium,
       moisture,
       temperature,
-      ph: numeric(npk.ph, soilData.soil.ph),
+      ph: numeric(npk.ph),
     },
     environment: {
       ...soilData.environment,
-      temperature: numeric(esp32.temperature_c, soilData.environment.temperature),
-      humidity: numeric(esp32.humidity_pct, soilData.environment.humidity),
-      pressure: numeric(esp32.pressure_hpa, soilData.environment.pressure),
-      rainfall: numeric(esp32.rain_intensity_estimate_mm_h, soilData.environment.rainfall),
-      airQuality: numeric(esp32.mq5_aqi_estimate, soilData.environment.airQuality),
+      temperature: numeric(esp32.temperature_c),
+      humidity: numeric(esp32.humidity_pct),
+      pressure: numeric(esp32.pressure_hpa),
+      rainfall: numeric(esp32.rain_intensity_estimate_mm_h),
+      airQuality: numeric(esp32.mq5_aqi_estimate),
     },
     water: {
       ...soilData.water,
-      pumpStatus: esp32.relay === true ? "ON" : "OFF",
-      irrigationStatus: esp32.relay === true ? "ACTIVE" : "READY",
+      pumpStatus: typeof esp32.relay === "boolean" ? (esp32.relay ? "ON" : "OFF") : "UNAVAILABLE",
+      irrigationStatus: typeof esp32.relay === "boolean" ? (esp32.relay ? "ACTIVE" : "READY") : "UNAVAILABLE",
     },
     devices: {
       ...soilData.devices,
@@ -75,11 +78,11 @@ function mapSensorRows(rows: SensorRow[]): SoilData {
       const rowNpk = nestedData(row.npk);
       return {
         timestamp: new Date(row.created_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
-        nitrogen: numeric(rowNpk.nitrogen_mg_kg, 0),
-        phosphorus: numeric(rowNpk.phosphorus_mg_kg, 0),
-        potassium: numeric(rowNpk.potassium_mg_kg, 0),
-        moisture: numeric(rowNpk.moisture_pct, 0),
-        temperature: numeric(rowNpk.temperature_c, 0),
+        nitrogen: numeric(rowNpk.nitrogen_mg_kg) ?? 0,
+        phosphorus: numeric(rowNpk.phosphorus_mg_kg) ?? 0,
+        potassium: numeric(rowNpk.potassium_mg_kg) ?? 0,
+        moisture: numeric(rowNpk.moisture_pct) ?? 0,
+        temperature: numeric(rowNpk.temperature_c) ?? 0,
         status: "NORMAL",
       };
     }),

@@ -31,9 +31,9 @@ const steps = [
     subtitle: "& irrigate",
     description: "Use water status and soil moisture to make timely irrigation decisions and protect the crop.",
     code: `field.irrigation({
-  tank: 72,
-  pump: 'OFF',
-  status: 'READY'
+      relay: 'from esp32',
+      pump: 'from relay',
+      status: 'from sensor data'
 })`,
   },
 ];

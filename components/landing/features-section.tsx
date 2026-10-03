@@ -9,19 +9,19 @@ const features = [
     number: "01",
     title: "Soil Health",
     description: "Track a clear soil health score from nutrient balance, moisture, temperature, and pH readings.",
-    stats: { value: `${soilData.soil.health}%`, label: "current health score" },
+    stats: { value: "—", label: "current health score" },
   },
   {
     number: "02",
     title: "Soil Moisture",
     description: "Monitor moisture continuously so irrigation decisions are based on current field conditions.",
-    stats: { value: `${soilData.soil.moisture}%`, label: "current moisture" },
+    stats: { value: "—", label: "current moisture" },
   },
   {
     number: "03",
     title: "NPK Balance",
     description: "Read nitrogen, phosphorus, and potassium levels from the connected NPK sensor.",
-    stats: { value: `${soilData.soil.nitrogen}/${soilData.soil.phosphorus}/${soilData.soil.potassium}`, label: "N / P / K mg/kg" },
+    stats: { value: "—", label: "N / P / K mg/kg" },
   },
   {
     number: "04",
@@ -149,11 +149,11 @@ export function FeaturesSection() {
   }, []);
 
   const liveFeatures = features.map((feature, index) => index === 0
-    ? { ...feature, stats: { value: `${data.soil.health}%`, label: "current health score" } }
+    ? { ...feature, stats: { value: data.soil.health === null ? "—" : `${data.soil.health}%`, label: "current health score" } }
     : index === 1
-      ? { ...feature, stats: { value: `${data.soil.moisture}%`, label: "current moisture" } }
+      ? { ...feature, stats: { value: data.soil.moisture === null ? "—" : `${data.soil.moisture}%`, label: "current moisture" } }
       : index === 2
-        ? { ...feature, stats: { value: `${data.soil.nitrogen}/${data.soil.phosphorus}/${data.soil.potassium}`, label: "N / P / K mg/kg" } }
+        ? { ...feature, stats: { value: [data.soil.nitrogen, data.soil.phosphorus, data.soil.potassium].every((value) => value !== null) ? `${data.soil.nitrogen}/${data.soil.phosphorus}/${data.soil.potassium}` : "—", label: "N / P / K mg/kg" } }
         : feature);
 
   return (
