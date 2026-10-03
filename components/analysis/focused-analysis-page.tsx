@@ -50,7 +50,7 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
       accent: "rgba(159,140,255,.18)",
       pattern: "linear-gradient(rgba(159,140,255,.10) 1px, transparent 1px), linear-gradient(90deg, rgba(159,140,255,.10) 1px, transparent 1px)",
       imagePosition: "center right",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2812%29-ng3RrNnsPMJ5CrtOjcPTmhHg01W11q.png",
+      image: "/route-art/analytics.png",
     },
     sensors: {
       label: "FIELD NETWORK / LIVE",
@@ -58,7 +58,7 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
       accent: "rgba(125,211,252,.16)",
       pattern: "radial-gradient(circle at 1px 1px, rgba(125,211,252,.18) 1px, transparent 0)",
       imagePosition: "left center",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/connection-KeJwWPQvn6l0a7C48tCARYtNEdC92H.png",
+      image: "/route-art/sensors.png",
     },
     alerts: {
       label: "SIGNAL / MONITOR",
@@ -66,7 +66,7 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
       accent: "rgba(236,168,214,.16)",
       pattern: "linear-gradient(135deg, rgba(236,168,214,.09) 12%, transparent 12.5%, transparent 50%, rgba(236,168,214,.09) 50.5%, rgba(236,168,214,.09) 62%, transparent 62.5%, transparent)",
       imagePosition: "center center",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2810%29-UnDKstODkIENp5xqTYUEpt0Sm8tNOw.png",
+      image: "/route-art/alerts.png",
     },
   }[kind];
 
