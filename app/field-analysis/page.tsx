@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CartesianGrid,
   Line,
@@ -78,12 +78,68 @@ function value(value: number | null, suffix = "") {
   return value === null ? "—" : `${value}${suffix}`;
 }
 
+type BrowserLocation = {
+  latitude: number;
+  longitude: number;
+  accuracy: number;
+};
+
 export default function FieldAnalysisPage() {
   const { data, lastUpdated } = useSoilData();
+  const [browserLocation, setBrowserLocation] = useState<BrowserLocation | null>(null);
+  const [locationStatus, setLocationStatus] = useState("Requesting browser GPS");
   const chartData = useMemo(() => data.readings, [data.readings]);
-  const mapUrl = data.location.valid && data.location.latitude !== null && data.location.longitude !== null
-    ? `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${data.location.longitude - 0.01},${data.location.latitude - 0.01},${data.location.longitude + 0.01},${data.location.latitude + 0.01}&bboxSR=4326&imageSR=4326&size=1200,600&format=jpg&f=image`
+
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setLocationStatus("Browser GPS unavailable");
+      return;
+    }
+
+    const watchId = navigator.geolocation.watchPosition(
+      (position) => {
+        setBrowserLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          accuracy: position.coords.accuracy,
+        });
+        setLocationStatus("BROWSER GPS FIX");
+      },
+      () => setLocationStatus("Location permission required"),
+      { enableHighAccuracy: true, maximumAge: 30_000, timeout: 15_000 },
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
+  const location = browserLocation;
+  const mapUrl = location
+    ? `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${location.longitude - 0.01},${location.latitude - 0.01},${location.longitude + 0.01},${location.latitude + 0.01}&bboxSR=4326&imageSR=4326&size=1200,600&format=jpg&f=image`
     : null;
+  const qgisWmsUrl = location
+    ? `https://ows.terrestris.de/osm/service?SERVICE=WMS&REQUEST=GetMap&VERSION=1.1.1&LAYERS=OSM-WMS&STYLES=&SRS=EPSG:4326&WIDTH=1200&HEIGHT=600&FORMAT=image/png&BBOX=${location.longitude - 0.01},${location.latitude - 0.01},${location.longitude + 0.01},${location.latitude + 0.01}`
+    : null;
+  const arcgisViewerUrl = location
+    ? `https://www.arcgis.com/home/webmap/viewer.html?center=${location.longitude},${location.latitude}&level=15`
+    : "https://www.arcgis.com/home/webmap/viewer.html";
+
+  const downloadQgisGeoJson = () => {
+    if (!location) return;
+    const geoJson = {
+      type: "FeatureCollection",
+      features: [{
+        type: "Feature",
+        properties: { source: "Mrittika browser GPS", accuracy_m: location.accuracy },
+        geometry: { type: "Point", coordinates: [location.longitude, location.latitude] },
+      }],
+    };
+    const url = URL.createObjectURL(new Blob([JSON.stringify(geoJson, null, 2)], { type: "application/geo+json" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "mrittika-field-location.geojson";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-background text-foreground">
@@ -114,26 +170,37 @@ export default function FieldAnalysisPage() {
                   <div className="text-lg">QGIS field context</div>
                   <div className="text-xs font-mono text-muted-foreground mt-1">GPS-linked satellite layer</div>
                 </div>
-                <span className={`text-xs font-mono ${data.location.valid ? "text-[#eca8d6]" : "text-muted-foreground"}`}>
-                  {data.location.valid ? "GPS FIX" : "NO GPS FIX"}
+                <span className={`text-xs font-mono ${location ? "text-[#eca8d6]" : "text-muted-foreground"}`}>
+                  {locationStatus}
                 </span>
               </div>
               <div className="relative min-h-[360px] bg-[#0c0d0d]">
                 {mapUrl ? (
-                  <img src={mapUrl} alt="Satellite imagery around the sensor location" className="absolute inset-0 h-full w-full object-cover opacity-80" />
+                  <img src={mapUrl} alt="Satellite imagery around the browser GPS location" className="absolute inset-0 h-full w-full object-cover opacity-80" />
                 ) : (
                   <div className="absolute inset-0 opacity-40" style={{ backgroundImage: "linear-gradient(rgba(236,168,214,.16) 1px, transparent 1px), linear-gradient(90deg, rgba(236,168,214,.16) 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
                 )}
                 <div className="absolute inset-0 flex items-center justify-center p-8">
                   <div className="border border-foreground/20 bg-background/90 px-8 py-7 text-center max-w-md">
-                    <div className="text-3xl font-display mb-3">{data.location.valid ? "Field location active" : "GPS coordinates unavailable"}</div>
+                    <div className="text-3xl font-display mb-3">{location ? "Browser location active" : "Waiting for browser GPS"}</div>
                     <p className="text-sm text-muted-foreground leading-relaxed">
-                      {data.location.valid
-                        ? `${data.location.latitude?.toFixed(5)}, ${data.location.longitude?.toFixed(5)}`
-                        : "The current sensor payload reports no valid GPS fix. Add latitude and longitude fields to the ESP32 payload to activate satellite imagery and QGIS layers."}
+                      {location
+                        ? `${location.latitude.toFixed(5)}, ${location.longitude.toFixed(5)} · ±${Math.round(location.accuracy)} m`
+                        : "Allow location access in the browser. This map uses the browser GPS position, not coordinates from the sensor payload."}
                     </p>
                   </div>
                 </div>
+              </div>
+              <div className="p-6 lg:p-8 flex flex-wrap gap-3 border-t border-foreground/10">
+                <a href={arcgisViewerUrl} target="_blank" rel="noreferrer" className="px-4 py-2 border border-foreground/20 text-xs font-mono hover:bg-foreground/10 transition-colors">
+                  Open ArcGIS
+                </a>
+                <a href={qgisWmsUrl ?? "#"} target="_blank" rel="noreferrer" className={`px-4 py-2 border border-foreground/20 text-xs font-mono hover:bg-foreground/10 transition-colors ${!qgisWmsUrl ? "pointer-events-none opacity-40" : ""}`}>
+                  Preview QGIS WMS
+                </a>
+                <button type="button" onClick={downloadQgisGeoJson} disabled={!location} className="px-4 py-2 border border-foreground/20 text-xs font-mono hover:bg-foreground/10 transition-colors disabled:opacity-40">
+                  Download QGIS GeoJSON
+                </button>
               </div>
             </div>
 
