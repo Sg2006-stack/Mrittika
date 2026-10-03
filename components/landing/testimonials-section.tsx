@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { soilData } from "@/lib/soil-data";
+import { useSoilData } from "@/hooks/use-soil-data";
 
 const testimonials = [
   {
@@ -36,6 +37,7 @@ const testimonials = [
 ];
 
 export function TestimonialsSection() {
+  const { data } = useSoilData();
   const [activeIndex, setActiveIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [direction, setDirection] = useState<"left" | "right">("right");
@@ -76,7 +78,14 @@ export function TestimonialsSection() {
     setActiveIndex((prev) => (prev + 1) % testimonials.length);
   };
 
-  const activeTestimonial = testimonials[activeIndex];
+  const liveTestimonials = testimonials.map((testimonial, index) => index === 0
+    ? { ...testimonial, metric: { value: `${data.soil.moisture}%`, label: "Moisture" } }
+    : index === 1
+      ? { ...testimonial, metric: { value: `${data.soil.nitrogen}`, label: "N mg/kg" } }
+      : index === 2
+        ? { ...testimonial, metric: { value: `${data.environment.humidity}%`, label: "Humidity" } }
+        : { ...testimonial, metric: { value: `${data.water.tankLevel}%`, label: "Tank level" } });
+  const activeTestimonial = liveTestimonials[activeIndex];
   const asciiPattern = Array.from({ length: 60 }, (_, row) =>
     Array.from({ length: 100 }, (_, column) =>
       (row * 37 + column * 17) % 10 > 6 ? '"' : ' '
@@ -174,7 +183,7 @@ export function TestimonialsSection() {
 
             {/* Progress indicators */}
             <div className="flex gap-2">
-              {testimonials.map((_, idx) => (
+              {liveTestimonials.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => goTo(idx)}
@@ -196,7 +205,7 @@ export function TestimonialsSection() {
                 Featured readings
               </span>
               <div className="flex flex-wrap gap-3">
-                {testimonials.map((t, idx) => (
+                {liveTestimonials.map((t, idx) => (
                   <button
                     key={t.company}
                     onClick={() => goTo(idx)}

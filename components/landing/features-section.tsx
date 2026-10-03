@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { soilData } from "@/lib/soil-data";
+import { useSoilData } from "@/hooks/use-soil-data";
 
 const features = [
   {
@@ -130,6 +131,7 @@ function ParticleVisualization() {
 }
 
 export function FeaturesSection() {
+  const { data } = useSoilData();
   const [isVisible, setIsVisible] = useState(false);
   const [activeFeature, setActiveFeature] = useState(0);
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -145,6 +147,14 @@ export function FeaturesSection() {
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
+
+  const liveFeatures = features.map((feature, index) => index === 0
+    ? { ...feature, stats: { value: `${data.soil.health}%`, label: "current health score" } }
+    : index === 1
+      ? { ...feature, stats: { value: `${data.soil.moisture}%`, label: "current moisture" } }
+      : index === 2
+        ? { ...feature, stats: { value: `${data.soil.nitrogen}/${data.soil.phosphorus}/${data.soil.potassium}`, label: "N / P / K mg/kg" } }
+        : feature);
 
   return (
     <section
@@ -194,16 +204,16 @@ export function FeaturesSection() {
             <div className="relative flex-1 p-8 lg:p-12 bg-black">
               <ParticleVisualization />
               <div className="relative z-10">
-                <span className="font-mono text-sm text-muted-foreground">{features[0].number}</span>
+                <span className="font-mono text-sm text-muted-foreground">                {liveFeatures[0].number}</span>
                 <h3 className="text-3xl lg:text-4xl font-display mt-4 mb-6 group-hover:translate-x-2 transition-transform duration-500">
-                  {features[0].title}
+                  {liveFeatures[0].title}
                 </h3>
                 <p className="text-lg text-muted-foreground leading-relaxed max-w-md mb-8">
-                  {features[0].description}
+                  {liveFeatures[0].description}
                 </p>
                 <div>
-                  <span className="text-5xl lg:text-6xl font-display">{features[0].stats.value}</span>
-                  <span className="block text-sm text-muted-foreground font-mono mt-2">{features[0].stats.label}</span>
+                  <span className="text-5xl lg:text-6xl font-display">                  {liveFeatures[0].stats.value}</span>
+                  <span className="block text-sm text-muted-foreground font-mono mt-2">                  {liveFeatures[0].stats.label}</span>
                 </div>
               </div>
             </div>

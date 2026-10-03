@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { soilData } from "@/lib/soil-data";
+import { useSoilData } from "@/hooks/use-soil-data";
 
 const metrics = [
   { 
@@ -218,9 +219,15 @@ function DotGraph({
 }
 
 export function MetricsSection() {
+  const { data } = useSoilData();
   const [time, setTime] = useState<Date | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const liveMetrics = [
+    { value: data.soil.moisture, suffix: "%", prefix: "", label: "Soil moisture", sublabel: "live field reading" },
+    { value: data.environment.humidity, suffix: "%", prefix: "", label: "Air humidity", sublabel: "current environment" },
+    { value: data.soil.temperature, suffix: "°C", prefix: "", label: "Soil temperature", sublabel: "current sensor reading" },
+  ];
 
   useEffect(() => {
     setTime(new Date());
@@ -286,17 +293,17 @@ export function MetricsSection() {
             isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
           }`}>
             <div className="text-4xl md:text-5xl lg:text-6xl font-display tracking-tight mb-4 whitespace-nowrap overflow-hidden">
-              <AnimatedNumber end={metrics[0].value} suffix={metrics[0].suffix} prefix={metrics[0].prefix} />
+              <AnimatedNumber end={liveMetrics[0].value} suffix={liveMetrics[0].suffix} prefix={liveMetrics[0].prefix} />
             </div>
             <div className="mb-6">
               <DotGraph color="white" height={36} freq1={0.28} freq2={0.09} freqT={0.5} speed={0.018} baseline={0.35} amplitude={0.55} />
             </div>
-            <div className="text-lg text-foreground mb-2">{metrics[0].label}</div>
-            <div className="text-sm text-muted-foreground font-mono">{metrics[0].sublabel}</div>
+            <div className="text-lg text-foreground mb-2">{liveMetrics[0].label}</div>
+            <div className="text-sm text-muted-foreground font-mono">{liveMetrics[0].sublabel}</div>
           </div>
 
           {/* Metrics */}
-          {metrics.slice(1).map((metric, index) => (
+          {liveMetrics.slice(1).map((metric, index) => (
             <div
               key={metric.label}
               className={`bg-foreground/[0.02] border border-foreground/10 p-8 flex flex-col items-start justify-between gap-6 transition-all duration-700 ${

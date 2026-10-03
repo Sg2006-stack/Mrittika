@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { soilData } from "@/lib/soil-data";
+import { useSoilData } from "@/hooks/use-soil-data";
 
 const words = ["monitor", "measure", "protect", "grow"];
 
@@ -106,6 +107,7 @@ function BlurWord({ word, trigger }: { word: string; trigger: number }) {
 }
 
 export function HeroSection() {
+  const { data } = useSoilData();
   const [isVisible, setIsVisible] = useState(false);
   const [wordIndex, setWordIndex] = useState(0);
 
@@ -206,9 +208,9 @@ export function HeroSection() {
       >
         <div className="max-w-[1400px] mx-auto flex items-start gap-10 lg:gap-20">
           {[
-            { value: `${soilData.soil.health}%`, label: "soil health score" },
-            { value: `${soilData.soil.moisture}%`, label: "soil moisture" },
-            { value: soilData.devices.npkSensor, label: "NPK sensor status" },
+            { value: `${data.soil.health}%`, label: "soil health score" },
+            { value: `${data.soil.moisture}%`, label: "soil moisture" },
+            { value: data.devices.npkSensor, label: "NPK sensor status" },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col gap-2">
               <span className="text-3xl lg:text-4xl font-display text-white">{stat.value}</span>

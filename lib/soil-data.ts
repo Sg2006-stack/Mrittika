@@ -1,4 +1,42 @@
-export const soilData = {
+export type SoilData = {
+  soil: {
+    health: number;
+    nitrogen: number;
+    phosphorus: number;
+    potassium: number;
+    moisture: number;
+    temperature: number;
+    ph: number;
+  };
+  environment: {
+    temperature: number;
+    humidity: number;
+    pressure: number;
+    rainfall: number;
+    airQuality: number;
+  };
+  water: {
+    tankLevel: number;
+    pumpStatus: string;
+    irrigationStatus: string;
+  };
+  devices: {
+    raspberryPi: string;
+    esp32: string;
+    npkSensor: string;
+  };
+  readings: Array<{
+    timestamp: string;
+    nitrogen: number;
+    phosphorus: number;
+    potassium: number;
+    moisture: number;
+    temperature: number;
+    status: string;
+  }>;
+};
+
+export const soilData: SoilData = {
   soil: {
     health: 84,
     nitrogen: 42,
@@ -30,4 +68,4 @@ export const soilData = {
     { timestamp: "10:15", nitrogen: 41, phosphorus: 28, potassium: 34, moisture: 44, temperature: 24.4, status: "NORMAL" },
     { timestamp: "10:00", nitrogen: 40, phosphorus: 27, potassium: 34, moisture: 46, temperature: 24.1, status: "NORMAL" },
   ],
-} as const;
+};

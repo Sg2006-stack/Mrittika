@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { soilData } from "@/lib/soil-data";
+import { useSoilData } from "@/hooks/use-soil-data";
 
 const regions = [
   { name: "Raspberry Pi 5", nodes: soilData.devices.raspberryPi, status: "ONLINE" },
@@ -11,9 +12,16 @@ const regions = [
 ];
 
 export function InfrastructureSection() {
+  const { data } = useSoilData();
   const [isVisible, setIsVisible] = useState(false);
   const [activeRegion, setActiveRegion] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
+  const liveRegions = [
+    { name: "Raspberry Pi 5", nodes: data.devices.raspberryPi, status: data.devices.raspberryPi },
+    { name: "ESP32", nodes: data.devices.esp32, status: data.devices.esp32 },
+    { name: "NPK sensor", nodes: data.devices.npkSensor, status: data.devices.npkSensor },
+    { name: "Irrigation pump", nodes: data.water.pumpStatus, status: data.water.irrigationStatus },
+  ];
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -158,14 +166,14 @@ export function InfrastructureSection() {
             <div className={`p-8 border border-foreground/10 bg-foreground/[0.02] transition-all duration-700 delay-100 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              <span className="text-5xl lg:text-6xl font-display">{soilData.water.tankLevel}%</span>
+              <span className="text-5xl lg:text-6xl font-display">{data.water.tankLevel}%</span>
               <span className="block text-sm text-muted-foreground mt-2">Water tank level</span>
             </div>
             
             <div className={`p-8 border border-foreground/10 bg-foreground/[0.02] transition-all duration-700 delay-200 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              <span className="text-5xl lg:text-6xl font-display">{soilData.water.pumpStatus}</span>
+              <span className="text-5xl lg:text-6xl font-display">{data.water.pumpStatus}</span>
               <span className="block text-sm text-muted-foreground mt-2">Pump status</span>
             </div>
           </div>
@@ -175,7 +183,7 @@ export function InfrastructureSection() {
         <div className={`mt-12 grid grid-cols-2 lg:grid-cols-4 gap-4 transition-all duration-1000 delay-300 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          {regions.map((region, index) => (
+          {liveRegions.map((region, index) => (
             <div
               key={region.name}
               className={`p-6 border transition-all duration-300 cursor-default ${
