@@ -227,6 +227,20 @@ export default function FieldAnalysisPage() {
             </div>
           </div>
 
+          <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              ["Soil moisture", value(data.soil.moisture, "%")],
+              ["NPK sensor", data.devices.npkSensor],
+              ["Pump relay", data.water.pumpStatus],
+              ["Samples", `${data.readings.length} loaded`],
+            ].map(([label, reading]) => (
+              <div key={label} className="border border-foreground/10 bg-foreground/[0.02] p-6">
+                <div className="text-2xl lg:text-3xl font-display mb-2">{reading}</div>
+                <div className="text-xs font-mono text-muted-foreground uppercase tracking-wider">{label}</div>
+              </div>
+            ))}
+          </div>
+
           <div className="mt-20 flex items-end justify-between gap-6">
             <div>
               <div className="flex items-center gap-3 text-sm font-mono text-muted-foreground mb-4">

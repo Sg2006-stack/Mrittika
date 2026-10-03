@@ -8,14 +8,14 @@ const footerLinks = {
   Product: [
     { name: "Soil health", href: "#features" },
     { name: "Monitoring flow", href: "#how-it-works" },
-    { name: "Field overview", href: "#pricing" },
-    { name: "Sensors", href: "#integrations" },
+    { name: "Field overview", href: "/field-analysis" },
+    { name: "Sensors", href: "/field-analysis" },
   ],
   Devices: [
-    { name: "Digital twin", href: "#developers" },
-    { name: "Device map", href: "#infra" },
-    { name: "Sensor readings", href: "#metrics" },
-    { name: "System status", href: "#security" },
+    { name: "Digital twin", href: "/field-analysis" },
+    { name: "Device map", href: "/field-analysis" },
+    { name: "Sensor readings", href: "/field-analysis" },
+    { name: "System status", href: "/field-analysis" },
   ],
   Company: [
     { name: "About", href: "#" },
