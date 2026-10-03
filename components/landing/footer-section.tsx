@@ -2,6 +2,7 @@
 
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 
 const footerLinks = {
   Product: [
@@ -92,6 +93,10 @@ function AnimatedWaveCanvas() {
 }
 
 export function FooterSection() {
+  const pathname = usePathname();
+  const footerHref = (href: string) =>
+    href.startsWith("#") && pathname !== "/" ? `/${href}` : href;
+
   return (
     <footer className="relative bg-black">
       {/* Panoramic banner image */}
@@ -128,7 +133,7 @@ export function FooterSection() {
                 {socialLinks.map((link) => (
                   <a
                     key={link.name}
-                    href={link.href}
+                    href={footerHref(link.href)}
                     className="text-sm text-white/40 hover:text-white transition-colors flex items-center gap-1 group"
                   >
                     {link.name}
@@ -146,7 +151,7 @@ export function FooterSection() {
                   {links.map((link) => (
                     <li key={link.name}>
                       <a
-                        href={link.href}
+                        href={footerHref(link.href)}
                         className="text-sm text-white/40 hover:text-white transition-colors inline-flex items-center gap-2"
                       >
                         {link.name}
