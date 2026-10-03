@@ -286,6 +286,10 @@ function HistoryChart({
   );
 }
 
+function readingValue(value: number | null, suffix = "") {
+  return value === null ? "—" : `${value}${suffix}`;
+}
+
 export function MetricsSection() {
   const { data } = useSoilData();
   const [time, setTime] = useState<Date | null>(null);
@@ -414,6 +418,60 @@ export function MetricsSection() {
               </div>
             )}
           </div>
+        </div>
+
+        <div className={`mt-6 border border-foreground/10 bg-foreground/[0.02] transition-all duration-1000 delay-400 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          <div className="p-6 lg:p-8 border-b border-foreground/10 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <div className="text-lg text-foreground mb-1">Recent sensor data</div>
+              <div className="text-xs text-muted-foreground font-mono">
+                Latest readings received from the connected field sensors
+              </div>
+            </div>
+            <span className="text-xs font-mono text-muted-foreground">
+              {data.readings.length} samples
+            </span>
+          </div>
+
+          {data.readings.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[760px] text-left">
+                <thead className="border-b border-foreground/10 text-[10px] font-mono uppercase tracking-widest text-muted-foreground">
+                  <tr>
+                    <th className="px-6 lg:px-8 py-4 font-normal">Timestamp</th>
+                    <th className="px-4 py-4 font-normal">N</th>
+                    <th className="px-4 py-4 font-normal">P</th>
+                    <th className="px-4 py-4 font-normal">K</th>
+                    <th className="px-4 py-4 font-normal">Moisture</th>
+                    <th className="px-4 py-4 font-normal">Soil temp.</th>
+                    <th className="px-6 lg:px-8 py-4 font-normal">Humidity</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm font-mono">
+                  {data.readings.map((reading, index) => (
+                    <tr
+                      key={`${reading.timestamp}-${index}`}
+                      className="border-b border-foreground/10 last:border-b-0 hover:bg-foreground/[0.04] transition-colors"
+                    >
+                      <td className="px-6 lg:px-8 py-5 text-foreground">{reading.timestamp}</td>
+                      <td className="px-4 py-5 text-muted-foreground">{readingValue(reading.nitrogen, " mg/kg")}</td>
+                      <td className="px-4 py-5 text-muted-foreground">{readingValue(reading.phosphorus, " mg/kg")}</td>
+                      <td className="px-4 py-5 text-muted-foreground">{readingValue(reading.potassium, " mg/kg")}</td>
+                      <td className="px-4 py-5 text-muted-foreground">{readingValue(reading.moisture, "%")}</td>
+                      <td className="px-4 py-5 text-muted-foreground">{readingValue(reading.temperature, "°C")}</td>
+                      <td className="px-6 lg:px-8 py-5 text-muted-foreground">{readingValue(reading.humidity, "%")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <div className="p-8 text-sm text-muted-foreground font-mono">
+              Waiting for sensor data from Supabase
+            </div>
+          )}
         </div>
 
         {/* Metrics grid */}
