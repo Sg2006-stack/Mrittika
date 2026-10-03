@@ -84,11 +84,39 @@ type BrowserLocation = {
   accuracy: number;
 };
 
+type LiveAnalysis = {
+  source: string;
+  row_id: number | string | null;
+  captured_at: string;
+  analysis: {
+    severity: string;
+    actions: Array<{ code: string; category: string; priority: number; reasons: string[] }>;
+  };
+  findings: Array<{ label: string; value: number | null; unit: string; status: string; message: string; severity: string }>;
+};
+
 export default function FieldAnalysisPage() {
   const { data, lastUpdated } = useSoilData();
+  const [liveAnalysis, setLiveAnalysis] = useState<LiveAnalysis | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [browserLocation, setBrowserLocation] = useState<BrowserLocation | null>(null);
   const [locationStatus, setLocationStatus] = useState("Requesting browser GPS");
   const chartData = useMemo(() => data.readings, [data.readings]);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/soil-analysis", { cache: "no-store" })
+      .then(async (response) => {
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || "Analysis service unavailable.");
+        return payload as LiveAnalysis;
+      })
+      .then((payload) => { if (active) setLiveAnalysis(payload); })
+      .catch((error: unknown) => {
+        if (active) setAnalysisError(error instanceof Error ? error.message : "Analysis service unavailable.");
+      });
+    return () => { active = false; };
+  }, [lastUpdated]);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -239,6 +267,49 @@ export default function FieldAnalysisPage() {
                 <div className="text-xs font-mono text-muted-foreground uppercase tracking-wider">{label}</div>
               </div>
             ))}
+          </div>
+
+          <div className="mt-6 border border-foreground/10 bg-foreground/[0.02]">
+            <div className="p-6 lg:p-8 border-b border-foreground/10 flex flex-wrap justify-between gap-4">
+              <div>
+                <div className="text-lg">Live soil analysis</div>
+                <div className="text-xs font-mono text-muted-foreground mt-1">MITTI model using the latest Supabase sensor row</div>
+              </div>
+              <span className="text-xs font-mono text-muted-foreground">
+                {liveAnalysis ? `ROW ${liveAnalysis.row_id ?? "—"}` : "CONNECTING"}
+              </span>
+            </div>
+            {liveAnalysis ? (
+              <div className="p-6 lg:p-8 grid lg:grid-cols-[220px_1fr] gap-8">
+                <div>
+                  <div className="text-5xl font-display uppercase">{liveAnalysis.analysis.severity}</div>
+                  <div className="text-xs font-mono text-muted-foreground mt-2">overall severity</div>
+                </div>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {liveAnalysis.findings.slice(0, 4).map((finding) => (
+                    <div key={finding.label} className="border border-foreground/10 p-4">
+                      <div className="text-xs font-mono text-muted-foreground mb-2">{finding.label}</div>
+                      <div className="text-sm mb-2">{finding.status}</div>
+                      <div className="text-xs text-muted-foreground">{finding.message}</div>
+                    </div>
+                  ))}
+                  <div className="md:col-span-2 border-t border-foreground/10 pt-4">
+                    <div className="text-xs font-mono text-muted-foreground mb-3">recommended actions</div>
+                    <div className="flex flex-wrap gap-2">
+                      {liveAnalysis.analysis.actions.map((action) => (
+                        <span key={action.code} className="px-3 py-2 border border-foreground/15 text-xs font-mono">
+                          {action.code}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="p-6 lg:p-8 text-sm font-mono text-muted-foreground">
+                {analysisError ?? "Running analysis against the latest Supabase row…"}
+              </div>
+            )}
           </div>
 
           <div className="mt-20 flex items-end justify-between gap-6">
