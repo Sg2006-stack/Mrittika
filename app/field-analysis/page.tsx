@@ -99,6 +99,7 @@ export default function FieldAnalysisPage() {
   const { data, lastUpdated } = useSoilData();
   const [liveAnalysis, setLiveAnalysis] = useState<LiveAnalysis | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
+  const [irrigationMinutes, setIrrigationMinutes] = useState(0);
   const [browserLocation, setBrowserLocation] = useState<BrowserLocation | null>(null);
   const [locationStatus, setLocationStatus] = useState("Requesting browser GPS");
   const chartData = useMemo(() => data.readings, [data.readings]);
@@ -140,6 +141,23 @@ export default function FieldAnalysisPage() {
     return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
+  const recentMoisture = data.readings
+    .map((reading) => reading.moisture)
+    .filter((reading): reading is number => reading !== null)
+    .slice(0, 5);
+  const moistureTrend = recentMoisture.length >= 2
+    ? recentMoisture[0] - recentMoisture[recentMoisture.length - 1]
+    : null;
+  const projectedMoisture = data.soil.moisture === null
+    ? null
+    : Math.min(100, Math.max(0, data.soil.moisture + irrigationMinutes * 0.8));
+  const twinState = projectedMoisture === null
+    ? "AWAITING SENSOR DATA"
+    : projectedMoisture < 25
+      ? "DRY / IRRIGATION NEEDED"
+      : projectedMoisture > 70
+        ? "WET / HOLD IRRIGATION"
+        : "STABLE";
   const location = browserLocation;
   const mapUrl = location
     ? `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${location.longitude - 0.01},${location.latitude - 0.01},${location.longitude + 0.01},${location.latitude + 0.01}&bboxSR=4326&imageSR=4326&size=1200,600&format=jpg&f=image`
@@ -310,6 +328,61 @@ export default function FieldAnalysisPage() {
                 {analysisError ?? "Running analysis against the latest Supabase row…"}
               </div>
             )}
+          </div>
+
+          <div className="mt-6 border border-foreground/10 bg-foreground/[0.02]">
+            <div className="p-6 lg:p-8 border-b border-foreground/10 flex flex-wrap justify-between gap-4">
+              <div>
+                <div className="text-lg">Light digital twin</div>
+                <div className="text-xs font-mono text-muted-foreground mt-1">A transparent field-state projection from live sensor readings</div>
+              </div>
+              <span className="text-xs font-mono text-muted-foreground">LIVE STATE · {twinState}</span>
+            </div>
+            <div className="p-6 lg:p-8 grid lg:grid-cols-[1fr_1.2fr] gap-8">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="border border-foreground/10 p-4">
+                  <div className="text-xs font-mono text-muted-foreground mb-2">CURRENT MOISTURE</div>
+                  <div className="text-3xl font-display">{value(data.soil.moisture, "%")}</div>
+                </div>
+                <div className="border border-foreground/10 p-4">
+                  <div className="text-xs font-mono text-muted-foreground mb-2">5-READING TREND</div>
+                  <div className="text-3xl font-display">{moistureTrend === null ? "—" : `${moistureTrend > 0 ? "+" : ""}${moistureTrend.toFixed(1)}%`}</div>
+                </div>
+                <div className="col-span-2 border border-foreground/10 p-4">
+                  <div className="flex justify-between gap-4 text-xs font-mono text-muted-foreground mb-3">
+                    <span>PROJECTED MOISTURE</span>
+                    <span>{projectedMoisture === null ? "—" : `${projectedMoisture.toFixed(1)}%`}</span>
+                  </div>
+                  <div className="h-2 bg-foreground/10 overflow-hidden">
+                    <div className="h-full bg-foreground transition-all" style={{ width: `${projectedMoisture ?? 0}%` }} />
+                  </div>
+                </div>
+              </div>
+              <div className="border border-foreground/10 p-5">
+                <div className="flex justify-between gap-4 text-sm">
+                  <span>What-if irrigation</span>
+                  <span className="font-mono">{irrigationMinutes} min</span>
+                </div>
+                <input
+                  aria-label="What-if irrigation duration"
+                  type="range"
+                  min="0"
+                  max="60"
+                  step="5"
+                  value={irrigationMinutes}
+                  onChange={(event) => setIrrigationMinutes(Number(event.target.value))}
+                  className="w-full mt-6 accent-current"
+                />
+                <div className="flex justify-between text-[10px] font-mono text-muted-foreground mt-2">
+                  <span>NO CHANGE</span>
+                  <span>SIMULATION ONLY</span>
+                  <span>60 MIN</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-6 leading-relaxed">
+                  Projection assumes approximately 0.8 moisture points per simulated minute. It is a planning aid, not an automatic pump command.
+                </p>
+              </div>
+            </div>
           </div>
 
           <div className="mt-20 flex items-end justify-between gap-6">
