@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { soilData } from "@/lib/soil-data";
 import { useSoilData } from "@/hooks/use-soil-data";
+import {
+  CartesianGrid,
+  Line,
+  LineChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 const metrics = [
   { 
@@ -218,6 +226,66 @@ function DotGraph({
   );
 }
 
+function HistoryChart({
+  data,
+  lines,
+  unit,
+}: {
+  data: Array<Record<string, number | string | null>>;
+  lines: Array<{ key: string; label: string; color: string }>;
+  unit: string;
+}) {
+  return (
+    <div className="h-64 w-full">
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={[...data].reverse()} margin={{ top: 12, right: 12, left: -24, bottom: 0 }}>
+          <CartesianGrid stroke="rgba(255,255,255,0.08)" vertical={false} />
+          <XAxis
+            dataKey="timestamp"
+            tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 11 }}
+            tickLine={false}
+            axisLine={false}
+            minTickGap={24}
+          />
+          <YAxis
+            tick={{ fill: "rgba(255,255,255,0.45)", fontSize: 11 }}
+            tickLine={false}
+            axisLine={false}
+            width={42}
+          />
+          <Tooltip
+            contentStyle={{
+              background: "hsl(var(--background))",
+              border: "1px solid rgba(255,255,255,0.16)",
+              borderRadius: 0,
+              color: "hsl(var(--foreground))",
+              fontFamily: "var(--font-mono)",
+              fontSize: 12,
+            }}
+            formatter={(value, name) => [
+              value === null || value === undefined ? "—" : `${value} ${unit}`,
+              lines.find((line) => line.key === name)?.label ?? name,
+            ]}
+          />
+          {lines.map((line) => (
+            <Line
+              key={line.key}
+              type="monotone"
+              dataKey={line.key}
+              name={line.key}
+              stroke={line.color}
+              strokeWidth={2}
+              dot={{ r: 2, fill: line.color, strokeWidth: 0 }}
+              activeDot={{ r: 4 }}
+              connectNulls={false}
+            />
+          ))}
+        </LineChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
 export function MetricsSection() {
   const { data } = useSoilData();
   const [time, setTime] = useState<Date | null>(null);
@@ -284,6 +352,68 @@ export function MetricsSection() {
             aria-hidden="true"
             className="w-full h-auto object-cover"
           />
+        </div>
+
+        <div className={`grid lg:grid-cols-2 gap-6 mt-6 transition-all duration-1000 delay-300 ${
+          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+        }`}>
+          <div className="border border-foreground/10 bg-foreground/[0.02] p-6 lg:p-8">
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <div>
+                <div className="text-lg text-foreground mb-1">Recent soil history</div>
+                <div className="text-xs text-muted-foreground font-mono">last {data.readings.length} recorded samples</div>
+              </div>
+              <div className="flex flex-wrap justify-end gap-x-3 gap-y-1 text-[10px] font-mono text-muted-foreground">
+                <span className="text-[#eca8d6]">N</span>
+                <span className="text-[#9f8cff]">P</span>
+                <span className="text-[#7dd3fc]">K</span>
+                <span className="text-[#f8d477]">Moisture</span>
+              </div>
+            </div>
+            {data.readings.length > 0 ? (
+              <HistoryChart
+                data={data.readings}
+                unit="mg/kg"
+                lines={[
+                  { key: "nitrogen", label: "Nitrogen", color: "#eca8d6" },
+                  { key: "phosphorus", label: "Phosphorus", color: "#9f8cff" },
+                  { key: "potassium", label: "Potassium", color: "#7dd3fc" },
+                  { key: "moisture", label: "Moisture", color: "#f8d477" },
+                ]}
+              />
+            ) : (
+              <div className="h-64 flex items-center justify-center text-sm text-muted-foreground font-mono">
+                Waiting for recent soil samples
+              </div>
+            )}
+          </div>
+
+          <div className="border border-foreground/10 bg-foreground/[0.02] p-6 lg:p-8">
+            <div className="flex items-start justify-between gap-4 mb-6">
+              <div>
+                <div className="text-lg text-foreground mb-1">Recent environment history</div>
+                <div className="text-xs text-muted-foreground font-mono">sensor records from Supabase</div>
+              </div>
+              <div className="flex gap-3 text-[10px] font-mono text-muted-foreground">
+                <span className="text-[#eca8d6]">Humidity</span>
+                <span className="text-[#7dd3fc]">Temperature</span>
+              </div>
+            </div>
+            {data.readings.length > 0 ? (
+              <HistoryChart
+                data={data.readings}
+                unit=""
+                lines={[
+                  { key: "humidity", label: "Humidity", color: "#eca8d6" },
+                  { key: "temperature", label: "Temperature", color: "#7dd3fc" },
+                ]}
+              />
+            ) : (
+              <div className="h-64 flex items-center justify-center text-sm text-muted-foreground font-mono">
+                Waiting for recent environment samples
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Metrics grid */}

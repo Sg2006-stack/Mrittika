@@ -78,12 +78,12 @@ function mapSensorRows(rows: SensorRow[]): SoilData {
       const rowNpk = nestedData(row.npk);
       return {
         timestamp: new Date(row.created_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
-        nitrogen: numeric(rowNpk.nitrogen_mg_kg) ?? 0,
-        phosphorus: numeric(rowNpk.phosphorus_mg_kg) ?? 0,
-        potassium: numeric(rowNpk.potassium_mg_kg) ?? 0,
-        moisture: numeric(rowNpk.moisture_pct) ?? 0,
-        temperature: numeric(rowNpk.temperature_c) ?? 0,
-        status: "NORMAL",
+        nitrogen: numeric(rowNpk.nitrogen_mg_kg),
+        phosphorus: numeric(rowNpk.phosphorus_mg_kg),
+        potassium: numeric(rowNpk.potassium_mg_kg),
+        moisture: numeric(rowNpk.moisture_pct),
+        temperature: numeric(rowNpk.temperature_c),
+        humidity: numeric(nestedData(row.esp32).humidity_pct),
       };
     }),
   };

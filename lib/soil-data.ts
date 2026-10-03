@@ -26,12 +26,12 @@ export type SoilData = {
   };
   readings: Array<{
     timestamp: string;
-    nitrogen: number;
-    phosphorus: number;
-    potassium: number;
-    moisture: number;
-    temperature: number;
-    status: string;
+    nitrogen: number | null;
+    phosphorus: number | null;
+    potassium: number | null;
+    moisture: number | null;
+    temperature: number | null;
+    humidity: number | null;
   }>;
 };
 
