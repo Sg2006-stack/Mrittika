@@ -43,25 +43,63 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
   }, [kind, lastUpdated]);
 
   const chartData = useMemo(() => [...data.readings].reverse(), [data.readings]);
+  const visual = {
+    analytics: {
+      label: "TEMPORAL / 30D",
+      className: "from-[#171126] via-background to-background",
+      accent: "rgba(159,140,255,.18)",
+      pattern: "linear-gradient(rgba(159,140,255,.10) 1px, transparent 1px), linear-gradient(90deg, rgba(159,140,255,.10) 1px, transparent 1px)",
+    },
+    sensors: {
+      label: "FIELD NETWORK / LIVE",
+      className: "from-[#071b1b] via-background to-background",
+      accent: "rgba(125,211,252,.16)",
+      pattern: "radial-gradient(circle at 1px 1px, rgba(125,211,252,.18) 1px, transparent 0)",
+    },
+    alerts: {
+      label: "SIGNAL / MONITOR",
+      className: "from-[#1c1019] via-background to-background",
+      accent: "rgba(236,168,214,.16)",
+      pattern: "linear-gradient(135deg, rgba(236,168,214,.09) 12%, transparent 12.5%, transparent 50%, rgba(236,168,214,.09) 50.5%, rgba(236,168,214,.09) 62%, transparent 62.5%, transparent)",
+    },
+  }[kind];
 
   return (
     <main className="min-h-screen bg-background text-foreground">
       <Navigation />
-      <section className="pt-40 pb-24 lg:pt-48">
+      <section className={`relative overflow-hidden pt-40 pb-24 lg:pt-48 bg-gradient-to-br ${visual.className}`}>
+        <div
+          className="absolute inset-x-0 top-0 h-[620px] pointer-events-none opacity-80"
+          style={{
+            backgroundImage: `${visual.pattern}, radial-gradient(circle at 70% 15%, ${visual.accent}, transparent 38%)`,
+            backgroundSize: kind === "sensors" ? "22px 22px, auto" : "42px 42px, 42px 42px, auto",
+          }}
+        />
+        <div className="absolute right-[-8%] top-28 hidden lg:block text-[15rem] leading-none font-display text-white/[0.025] select-none pointer-events-none">
+          {kind === "analytics" ? "TRENDS" : kind === "sensors" ? "NODES" : "SIGNAL"}
+        </div>
+        <div className="absolute left-6 lg:left-12 top-32 text-[10px] font-mono tracking-[0.35em] text-foreground/30 [writing-mode:vertical-rl] pointer-events-none">
+          {visual.label}
+        </div>
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
           <div className="flex items-center gap-3 text-sm font-mono text-muted-foreground mb-6">
             <span className="w-12 h-px bg-foreground/20" />{eyebrow}
           </div>
-          <div className="grid lg:grid-cols-12 gap-8 items-end">
+          <div className="relative z-10 grid lg:grid-cols-12 gap-8 items-end">
             <h1 className="lg:col-span-8 text-6xl md:text-7xl lg:text-[110px] font-display tracking-tight leading-[0.9]">
               {title.split(" ")[0]}<br /><span className="text-muted-foreground">{title.split(" ").slice(1).join(" ")}</span>
             </h1>
             <p className="lg:col-span-4 text-lg text-muted-foreground leading-relaxed">{description}</p>
           </div>
+          <div className="relative z-10 mt-14 max-w-3xl border-l border-foreground/20 pl-5 text-sm leading-relaxed text-foreground/60">
+            {kind === "analytics" && "Patterns become useful when they stay connected to context. Compare nutrient movement with the environment around each reading."}
+            {kind === "sensors" && "The field is a network of small signals. Each value below is the latest reported state from a named device, not a placeholder."}
+            {kind === "alerts" && "Attention is not noise. MITTI turns the latest sensor state into a small set of conditions worth reviewing before they become field problems."}
+          </div>
 
           {kind === "analytics" && (
             <>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-20">
+              <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-4 mt-20">
                 {[
                   ["Samples", `${data.readings.length}`],
                   ["Moisture", value(data.soil.moisture, "%")],
@@ -69,7 +107,7 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
                   ["Updated", lastUpdated?.toLocaleTimeString("en-GB") ?? "—"],
                 ].map(([label, reading]) => <Metric key={label} label={label} value={reading} />)}
               </div>
-              <div className="grid lg:grid-cols-2 gap-6 mt-6">
+              <div className="relative z-10 grid lg:grid-cols-2 gap-6 mt-6">
                 <TrendChart title="Nutrients" data={chartData} lines={[
                   ["nitrogen", "#eca8d6"], ["phosphorus", "#9f8cff"], ["potassium", "#7dd3fc"],
                 ]} />
@@ -81,7 +119,7 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
           )}
 
           {kind === "sensors" && (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-20">
+            <div className="relative z-10 grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-20">
               {[
                 ["Nitrogen", value(data.soil.nitrogen, " mg/kg"), "NPK sensor"],
                 ["Phosphorus", value(data.soil.phosphorus, " mg/kg"), "NPK sensor"],
@@ -103,7 +141,7 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
           )}
 
           {kind === "alerts" && (
-            <div className="mt-20 border border-foreground/10 bg-foreground/[0.02]">
+            <div className="relative z-10 mt-20 border border-foreground/10 bg-foreground/[0.02]">
               {analysis ? (
                 <>
                   <div className="p-6 lg:p-8 border-b border-foreground/10 flex justify-between gap-4">
