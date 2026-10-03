@@ -24,6 +24,11 @@ export type SoilData = {
     esp32: string;
     npkSensor: string;
   };
+  location: {
+    latitude: number | null;
+    longitude: number | null;
+    valid: boolean;
+  };
   readings: Array<{
     timestamp: string;
     nitrogen: number | null;
@@ -32,6 +37,10 @@ export type SoilData = {
     moisture: number | null;
     temperature: number | null;
     humidity: number | null;
+    pressure: number | null;
+    rainfall: number | null;
+    airQuality: number | null;
+    ph: number | null;
   }>;
 };
 
@@ -60,6 +69,11 @@ export const soilData: SoilData = {
     raspberryPi: "ONLINE",
     esp32: "ONLINE",
     npkSensor: "CONNECTED",
+  },
+  location: {
+    latitude: null,
+    longitude: null,
+    valid: false,
   },
   readings: [],
 };

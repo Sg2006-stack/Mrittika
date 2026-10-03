@@ -33,6 +33,8 @@ function mapSensorRows(rows: SensorRow[]): SoilData {
   const latest = rows[0];
   const npk = nestedData(latest?.npk);
   const esp32 = nestedData(latest?.esp32);
+  const latitude = numeric(esp32.latitude);
+  const longitude = numeric(esp32.longitude);
   const moisture = numeric(npk.moisture_pct);
   const nitrogen = numeric(npk.nitrogen_mg_kg);
   const phosphorus = numeric(npk.phosphorus_mg_kg);
@@ -74,8 +76,14 @@ function mapSensorRows(rows: SensorRow[]): SoilData {
       esp32: latest?.esp32 ? "ONLINE" : "OFFLINE",
       npkSensor: latest?.npk ? "CONNECTED" : "OFFLINE",
     },
+    location: {
+      latitude,
+      longitude,
+      valid: esp32.gps_valid === true && latitude !== null && longitude !== null,
+    },
     readings: rows.map((row) => {
       const rowNpk = nestedData(row.npk);
+      const rowEsp32 = nestedData(row.esp32);
       return {
         timestamp: new Date(row.created_at).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }),
         nitrogen: numeric(rowNpk.nitrogen_mg_kg),
@@ -83,7 +91,11 @@ function mapSensorRows(rows: SensorRow[]): SoilData {
         potassium: numeric(rowNpk.potassium_mg_kg),
         moisture: numeric(rowNpk.moisture_pct),
         temperature: numeric(rowNpk.temperature_c),
-        humidity: numeric(nestedData(row.esp32).humidity_pct),
+        humidity: numeric(rowEsp32.humidity_pct),
+        pressure: numeric(rowEsp32.pressure_hpa),
+        rainfall: numeric(rowEsp32.rain_intensity_estimate_mm_h),
+        airQuality: numeric(rowEsp32.mq5_aqi_estimate),
+        ph: numeric(rowNpk.ph),
       };
     }),
   };
