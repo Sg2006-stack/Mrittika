@@ -74,19 +74,21 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
     <main className="min-h-screen bg-background text-foreground">
       <Navigation />
       <section className={`relative overflow-hidden pt-40 pb-24 lg:pt-48 bg-gradient-to-br ${visual.className}`}>
-        <div
-          className="absolute inset-0 pointer-events-none opacity-35"
+        <img
+          src={visual.image}
+          alt=""
+          aria-hidden="true"
+          className="absolute inset-0 h-full w-full object-cover pointer-events-none"
           style={{
-            backgroundImage: `url('${visual.image}')`,
-            backgroundPosition: visual.imagePosition,
-            backgroundRepeat: "no-repeat",
-            backgroundSize: "min(72vw, 980px) auto",
-            maskImage: "linear-gradient(to bottom, black 0%, black 62%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 62%, transparent 100%)",
+            objectPosition: visual.imagePosition,
+            opacity: 0.48,
+            filter: "saturate(.9) contrast(1.05)",
+            maskImage: "linear-gradient(to bottom, black 0%, black 68%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 68%, transparent 100%)",
           }}
         />
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-background via-background/65 to-transparent" />
-        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-background/20 via-transparent to-background" />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-background/85 via-background/45 to-background/10" />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-background/15 via-transparent to-background" />
         <div
           className="absolute inset-x-0 top-0 h-[620px] pointer-events-none opacity-45"
           style={{
