@@ -15,10 +15,6 @@ export type SoilData = {
     rainfall: number | null;
     airQuality: number | null;
   };
-  water: {
-    pumpStatus: string;
-    irrigationStatus: string;
-  };
   devices: {
     raspberryPi: string;
     esp32: string;
@@ -60,10 +56,6 @@ export const soilData: SoilData = {
     pressure: null,
     rainfall: null,
     airQuality: null,
-  },
-  water: {
-    pumpStatus: "UNAVAILABLE",
-    irrigationStatus: "UNAVAILABLE",
   },
   devices: {
     raspberryPi: "ONLINE",

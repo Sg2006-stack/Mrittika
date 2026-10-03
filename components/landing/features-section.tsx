@@ -14,7 +14,7 @@ const features = [
   {
     number: "02",
     title: "Soil Moisture",
-    description: "Monitor moisture continuously so irrigation decisions are based on current field conditions.",
+    description: "Monitor moisture continuously so field decisions are based on current conditions.",
     stats: { value: "—", label: "current moisture" },
   },
   {

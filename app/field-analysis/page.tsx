@@ -99,7 +99,6 @@ export default function FieldAnalysisPage() {
   const { data, lastUpdated } = useSoilData();
   const [liveAnalysis, setLiveAnalysis] = useState<LiveAnalysis | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
-  const [irrigationMinutes, setIrrigationMinutes] = useState(0);
   const [browserLocation, setBrowserLocation] = useState<BrowserLocation | null>(null);
   const [locationStatus, setLocationStatus] = useState("Requesting browser GPS");
   const chartData = useMemo(() => data.readings, [data.readings]);
@@ -148,15 +147,12 @@ export default function FieldAnalysisPage() {
   const moistureTrend = recentMoisture.length >= 2
     ? recentMoisture[0] - recentMoisture[recentMoisture.length - 1]
     : null;
-  const projectedMoisture = data.soil.moisture === null
-    ? null
-    : Math.min(100, Math.max(0, data.soil.moisture + irrigationMinutes * 0.8));
-  const twinState = projectedMoisture === null
+  const twinState = data.soil.moisture === null
     ? "AWAITING SENSOR DATA"
-    : projectedMoisture < 25
-      ? "DRY / IRRIGATION NEEDED"
-      : projectedMoisture > 70
-        ? "WET / HOLD IRRIGATION"
+    : data.soil.moisture < 25
+      ? "DRY"
+      : data.soil.moisture > 70
+        ? "WET"
         : "STABLE";
   const location = browserLocation;
   const mapUrl = location
@@ -277,7 +273,6 @@ export default function FieldAnalysisPage() {
             {[
               ["Soil moisture", value(data.soil.moisture, "%")],
               ["NPK sensor", data.devices.npkSensor],
-              ["Pump relay", data.water.pumpStatus],
               ["Samples", `${data.readings.length} loaded`],
             ].map(([label, reading]) => (
               <div key={label} className="border border-foreground/10 bg-foreground/[0.02] p-6">
@@ -338,7 +333,7 @@ export default function FieldAnalysisPage() {
               </div>
               <span className="text-xs font-mono text-muted-foreground">LIVE STATE · {twinState}</span>
             </div>
-            <div className="p-6 lg:p-8 grid lg:grid-cols-[1fr_1.2fr] gap-8">
+            <div className="p-6 lg:p-8">
               <div className="grid grid-cols-2 gap-3">
                 <div className="border border-foreground/10 p-4">
                   <div className="text-xs font-mono text-muted-foreground mb-2">CURRENT MOISTURE</div>
@@ -350,37 +345,13 @@ export default function FieldAnalysisPage() {
                 </div>
                 <div className="col-span-2 border border-foreground/10 p-4">
                   <div className="flex justify-between gap-4 text-xs font-mono text-muted-foreground mb-3">
-                    <span>PROJECTED MOISTURE</span>
-                    <span>{projectedMoisture === null ? "—" : `${projectedMoisture.toFixed(1)}%`}</span>
+                    <span>LIVE MOISTURE</span>
+                    <span>{data.soil.moisture === null ? "—" : `${data.soil.moisture.toFixed(1)}%`}</span>
                   </div>
                   <div className="h-2 bg-foreground/10 overflow-hidden">
-                    <div className="h-full bg-foreground transition-all" style={{ width: `${projectedMoisture ?? 0}%` }} />
+                    <div className="h-full bg-foreground transition-all" style={{ width: `${data.soil.moisture ?? 0}%` }} />
                   </div>
                 </div>
-              </div>
-              <div className="border border-foreground/10 p-5">
-                <div className="flex justify-between gap-4 text-sm">
-                  <span>What-if irrigation</span>
-                  <span className="font-mono">{irrigationMinutes} min</span>
-                </div>
-                <input
-                  aria-label="What-if irrigation duration"
-                  type="range"
-                  min="0"
-                  max="60"
-                  step="5"
-                  value={irrigationMinutes}
-                  onChange={(event) => setIrrigationMinutes(Number(event.target.value))}
-                  className="w-full mt-6 accent-current"
-                />
-                <div className="flex justify-between text-[10px] font-mono text-muted-foreground mt-2">
-                  <span>NO CHANGE</span>
-                  <span>SIMULATION ONLY</span>
-                  <span>60 MIN</span>
-                </div>
-                <p className="text-xs text-muted-foreground mt-6 leading-relaxed">
-                  Projection assumes approximately 0.8 moisture points per simulated minute. It is a planning aid, not an automatic pump command.
-                </p>
               </div>
             </div>
           </div>

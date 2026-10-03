@@ -125,7 +125,7 @@ export function FooterSection() {
               </a>
 
               <p className="text-white/50 leading-relaxed mb-8 max-w-xs text-sm">
-                Soil monitoring for healthier decisions, connected devices, and smarter irrigation.
+                Soil monitoring for healthier decisions and clearer field data.
               </p>
 
               {/* Social Links */}

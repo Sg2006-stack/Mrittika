@@ -32,20 +32,6 @@ const plans = [
     cta: "View environment",
     highlight: true,
   },
-  {
-    name: "Water",
-    description: "Tank and irrigation readiness",
-    price: { monthly: 72, annual: 72 },
-    features: [
-      "Pump relay state",
-      "Irrigation relay state",
-      "ESP32 status",
-      "Pressure reading",
-      "Available sensor fields",
-    ],
-    cta: "View irrigation",
-    highlight: false,
-  },
 ];
 
 export function PricingSection() {

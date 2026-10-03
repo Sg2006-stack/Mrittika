@@ -22,7 +22,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: 'Mrittika - Soil Monitoring',
-  description: 'Monitor soil health, environmental conditions, connected sensors, and irrigation from one place.',
+  description: 'Monitor soil health, environmental conditions, and connected sensors from one place.',
   generator: 'v0.app',
 }
 

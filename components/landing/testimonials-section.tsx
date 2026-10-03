@@ -7,7 +7,7 @@ import { useSoilData } from "@/hooks/use-soil-data";
 
 const testimonials = [
   {
-    quote: "Soil moisture is holding in the healthy range and irrigation is ready when the field needs it.",
+    quote: "Soil moisture stays visible in the healthy range with every connected reading.",
     author: "Soil moisture",
     role: "Live reading",
     company: "Field sensor",
@@ -21,18 +21,18 @@ const testimonials = [
     metric: { value: "—", label: "N mg/kg" },
   },
   {
-    quote: "Environmental context makes every soil reading more useful for the next irrigation decision.",
+    quote: "Environmental context makes every soil reading more useful for field decisions.",
     author: "Field environment",
     role: "Live reading",
     company: "Raspberry Pi 5",
     metric: { value: "—", label: "Humidity" },
   },
   {
-    quote: "All core devices are reporting normally, with the pump off and water available in reserve.",
-    author: "Irrigation system",
+    quote: "All core sensors report their latest available readings in one field view.",
+    author: "Sensor network",
     role: "System status",
-    company: "Water controls",
-    metric: { value: "—", label: "Unavailable" },
+    company: "Connected field",
+    metric: { value: "—", label: "Readings" },
   },
 ];
 

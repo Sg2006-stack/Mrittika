@@ -9,7 +9,6 @@ const navLinks = [
   { name: "Soil monitoring", href: "#features" },
   { name: "Analytics", href: "/field-analysis" },
   { name: "Sensors", href: "/field-analysis" },
-  { name: "Irrigation", href: "/field-analysis" },
   { name: "Alerts", href: "/field-analysis" },
   { name: "Field analysis", href: "/field-analysis" },
 ];

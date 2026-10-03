@@ -19,7 +19,7 @@ const securityFeatures = [
   {
     icon: Eye,
     title: "Actionable alerts",
-    description: "Surface warning and critical conditions before irrigation decisions.",
+    description: "Surface warning and critical field conditions early.",
     image: "/images/audit.jpg",
   },
   {

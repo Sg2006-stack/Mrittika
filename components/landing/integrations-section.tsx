@@ -72,7 +72,6 @@ const integrations = [
   { name: "Moisture probe", category: "Soil" },
   { name: "Temperature", category: "Environment" },
   { name: "Humidity", category: "Environment" },
-  { name: "Pump relay", category: "Irrigation" },
 ];
 
 export function IntegrationsSection() {
@@ -117,7 +116,7 @@ export function IntegrationsSection() {
         <p className={`mt-8 text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto transition-all duration-1000 delay-100 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          Your field devices connect to one view. Read soil, environment, water, and irrigation conditions as they change.
+          Your field devices connect to one view. Read soil and environmental conditions as they change.
         </p>
       </div>
 

@@ -57,7 +57,7 @@ export function CtaSection() {
                 </h2>
 
                 <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-xl">
-                  Monitor soil health, environmental conditions, and irrigation readiness from one Mrittika field view.
+                  Monitor soil health and environmental conditions from one Mrittika field view.
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-start gap-4">

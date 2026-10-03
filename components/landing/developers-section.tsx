@@ -15,10 +15,6 @@ const features = [
     title: "NPK sensor", 
     description: "CONNECTED nutrient readings for N, P, and K."
   },
-  { 
-    title: "Irrigation", 
-    description: "Pump relay status from the ESP32 payload."
-  },
 ];
 
 export function DevelopersSection() {
@@ -84,7 +80,7 @@ export function DevelopersSection() {
           }`}
         >
           <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-md">
-            A live operational view of your connected farm devices, soil readings, and irrigation state.
+            A live operational view of your connected farm devices and soil readings.
           </p>
           <div className="grid grid-cols-2 gap-6">
             {features.map((feature, index) => (

@@ -7,7 +7,7 @@ const steps = [
     number: "01",
     title: "Observe",
     subtitle: "the field",
-    description: "Collect soil, environment, and water readings from connected field sensors.",
+    description: "Collect soil and environmental readings from connected field sensors.",
     code: `const field = monitor({
   sensors: ['npk', 'moisture', 'temperature'],
   devices: ['raspberry-pi', 'esp32'],
@@ -28,12 +28,11 @@ const steps = [
   {
     number: "03",
     title: "Act",
-    subtitle: "& irrigate",
-    description: "Use water status and soil moisture to make timely irrigation decisions and protect the crop.",
-    code: `field.irrigation({
-      relay: 'from esp32',
-      pump: 'from relay',
-      status: 'from sensor data'
+    subtitle: "the field",
+    description: "Use the live soil and environment state to understand field conditions and protect the crop.",
+    code: `field.observe({
+  metrics: ['moisture', 'temperature', 'humidity'],
+  output: 'field-state'
 })`,
   },
 ];

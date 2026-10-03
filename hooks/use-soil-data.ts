@@ -65,11 +65,6 @@ function mapSensorRows(rows: SensorRow[]): SoilData {
       rainfall: numeric(esp32.rain_intensity_estimate_mm_h),
       airQuality: numeric(esp32.mq5_aqi_estimate),
     },
-    water: {
-      ...soilData.water,
-      pumpStatus: typeof esp32.relay === "boolean" ? (esp32.relay ? "ON" : "OFF") : "UNAVAILABLE",
-      irrigationStatus: typeof esp32.relay === "boolean" ? (esp32.relay ? "ACTIVE" : "READY") : "UNAVAILABLE",
-    },
     devices: {
       ...soilData.devices,
       raspberryPi: latest?.device_id ? "ONLINE" : "OFFLINE",

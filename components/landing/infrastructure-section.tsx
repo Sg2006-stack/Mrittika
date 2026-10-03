@@ -8,7 +8,6 @@ const regions = [
   { name: "Raspberry Pi 5", nodes: soilData.devices.raspberryPi, status: "ONLINE" },
   { name: "ESP32", nodes: soilData.devices.esp32, status: "ONLINE" },
   { name: "NPK sensor", nodes: soilData.devices.npkSensor, status: "CONNECTED" },
-  { name: "Irrigation pump", nodes: soilData.water.pumpStatus, status: soilData.water.irrigationStatus },
 ];
 
 export function InfrastructureSection() {
@@ -38,12 +37,6 @@ export function InfrastructureSection() {
         ? "—"
         : `N ${data.soil.nitrogen} · P ${data.soil.phosphorus} · K ${data.soil.potassium}`,
       status: data.devices.npkSensor,
-    },
-    {
-      name: "Irrigation pump",
-      detail: "Relay control",
-      value: data.water.pumpStatus,
-      status: data.water.irrigationStatus,
     },
   ];
 
@@ -105,7 +98,7 @@ export function InfrastructureSection() {
               <p className={`mt-8 text-xl text-muted-foreground leading-relaxed max-w-lg transition-all duration-1000 delay-100 ${
                 isVisible ? "opacity-100" : "opacity-0"
               }`}>
-                Every reading stays visible in one place, from the Raspberry Pi gateway to the irrigation pump.
+                Every reading stays visible in one place, from the Raspberry Pi gateway to the field sensors.
               </p>
             </div>
           </div>
@@ -197,8 +190,6 @@ export function InfrastructureSection() {
             <div className={`p-8 border border-foreground/10 bg-foreground/[0.02] transition-all duration-700 delay-200 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
             }`}>
-              <span className="text-5xl lg:text-6xl font-display">{data.water.pumpStatus}</span>
-              <span className="block text-sm text-muted-foreground mt-2">Pump status</span>
             </div>
           </div>
         </div>
