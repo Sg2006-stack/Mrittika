@@ -49,18 +49,24 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
       className: "from-[#171126] via-background to-background",
       accent: "rgba(159,140,255,.18)",
       pattern: "linear-gradient(rgba(159,140,255,.10) 1px, transparent 1px), linear-gradient(90deg, rgba(159,140,255,.10) 1px, transparent 1px)",
+      imagePosition: "center right",
+      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2812%29-ng3RrNnsPMJ5CrtOjcPTmhHg01W11q.png",
     },
     sensors: {
       label: "FIELD NETWORK / LIVE",
       className: "from-[#071b1b] via-background to-background",
       accent: "rgba(125,211,252,.16)",
       pattern: "radial-gradient(circle at 1px 1px, rgba(125,211,252,.18) 1px, transparent 0)",
+      imagePosition: "left center",
+      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/connection-KeJwWPQvn6l0a7C48tCARYtNEdC92H.png",
     },
     alerts: {
       label: "SIGNAL / MONITOR",
       className: "from-[#1c1019] via-background to-background",
       accent: "rgba(236,168,214,.16)",
       pattern: "linear-gradient(135deg, rgba(236,168,214,.09) 12%, transparent 12.5%, transparent 50%, rgba(236,168,214,.09) 50.5%, rgba(236,168,214,.09) 62%, transparent 62.5%, transparent)",
+      imagePosition: "center center",
+      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2810%29-UnDKstODkIENp5xqTYUEpt0Sm8tNOw.png",
     },
   }[kind];
 
@@ -69,7 +75,20 @@ export function FocusedAnalysisPage({ kind }: { kind: PageKind }) {
       <Navigation />
       <section className={`relative overflow-hidden pt-40 pb-24 lg:pt-48 bg-gradient-to-br ${visual.className}`}>
         <div
-          className="absolute inset-x-0 top-0 h-[620px] pointer-events-none opacity-80"
+          className="absolute inset-0 pointer-events-none opacity-35"
+          style={{
+            backgroundImage: `url('${visual.image}')`,
+            backgroundPosition: visual.imagePosition,
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "min(72vw, 980px) auto",
+            maskImage: "linear-gradient(to bottom, black 0%, black 62%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 62%, transparent 100%)",
+          }}
+        />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-r from-background via-background/65 to-transparent" />
+        <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-background/20 via-transparent to-background" />
+        <div
+          className="absolute inset-x-0 top-0 h-[620px] pointer-events-none opacity-45"
           style={{
             backgroundImage: `${visual.pattern}, radial-gradient(circle at 70% 15%, ${visual.accent}, transparent 38%)`,
             backgroundSize: kind === "sensors" ? "22px 22px, auto" : "42px 42px, 42px 42px, auto",
